@@ -70,3 +70,8 @@ Expense-Tracker/
         └── unit/
 ```
 
+## DATABASE SCHEMAS
+- [Erasor.io](https://app.eraser.io/workspace/n3gxyUQpwGk9cXnFW0kW?origin=share)
+
+- [Claude DB Design](https://claude.ai/chat/476097cb-5daa-4ed5-a509-e1b34c7c109b)
+
