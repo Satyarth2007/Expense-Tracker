@@ -1,27 +1,18 @@
-import express from 'express';
-import { pool } from './config/db.js'
-import dotenv from 'dotenv';
-dotenv.config();
+import app from './app.js'
+import { testDatabaseConnection } from './config/db.js'
+import dotenv from 'dotenv'
 
-const app = express();
+dotenv.config()
 
-app.use(express.json());
+const PORT = process.env.PORT || 3000
 
+app.listen(PORT, async () => {
+  try {
+    await testDatabaseConnection()
+    console.log('✅ Database connected successfully')
+  } catch (error) {
+    console.log('⚠️ Database not connected yet:', error)
+  }
 
-
-
-app.get('/', (req, res) => {
-    res.send('Hello, World!');
-});
-
-
-// Connect to the database pool
-pool.connect().then
-    (() => {
-        app.listen(process.env.PORT, () => {
-            console.log(`Server is running on port ${process.env.PORT}`);
-        })
-    }).catch((error) => {
-        console.log("Failed To Load the Database", error);
-        process.exit(1);
-    })
+  console.log(`🚀 Server is running on http://localhost:${PORT}`)
+})
