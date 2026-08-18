@@ -1,7 +1,8 @@
-import React from 'react'
+import _React from 'react'
 import individual from '../../assets/individual.png'
 import business from '../../assets/business_owner.png'
 import student from '../../assets/student.png'
+import { useNavigate } from 'react-router-dom'
 
 const navLinks = [
     { label: 'Features', href: '#features' },
@@ -72,6 +73,7 @@ const personas = [
 ]
 
 const Home = () => {
+    const navigate = useNavigate();
 
     return (
         <div
@@ -86,7 +88,7 @@ const Home = () => {
         >
             {/* ============ NAVBAR ============ */}
             <div
-                className="navbar px-6 lg:px-10 min-h-[64px]"
+                className="navbar px-6 lg:px-10 min-h-16"
                 style={{ backgroundColor: 'var(--color-ink)', color: 'var(--color-paper)' }}
             >
                 <div className="navbar-start">
@@ -121,13 +123,13 @@ const Home = () => {
                         Log in
                     </a>
 
-                    <a
-                        href="/get-started"
+                    <button
                         className="btn btn-sm border-none"
                         style={{ backgroundColor: 'var(--color-brass-light)', color: 'var(--color-ink)', fontFamily: 'var(--font-serif)', fontWeight: 600 }}
+                        onClick={()=> navigate('/register')}
                     >
                         Get started
-                    </a>
+                    </button>
 
                     <div className="dropdown dropdown-end lg:hidden">
                         <div tabIndex={0} role="button" className="btn btn-ghost btn-circle btn-sm" style={{ color: 'var(--color-paper-2)' }}>
@@ -181,13 +183,13 @@ const Home = () => {
                             not guessed at. Manual, imported, or recurring, every entry finds its column.
                         </p>
                         <div className="flex flex-wrap items-center gap-4">
-                            <a
-                                href="/get-started"
+                            <button
                                 className="btn border-none px-7"
                                 style={{ backgroundColor: 'var(--color-ink)', color: 'var(--color-paper)', fontFamily: 'var(--font-serif)', fontWeight: 600 }}
+                                onClick={()=> navigate('/register')}
                             >
                                 Get started →
-                            </a>
+                            </button>
                             <a
                                 href="#how-it-works"
                                 className="btn btn-ghost px-6"
@@ -312,7 +314,7 @@ const Home = () => {
                                 </p>
                                 {i < steps.length - 1 && (
                                     <span
-                                        className="hidden md:block absolute top-5 left-[calc(100%_-_19.7rem)] w-full h-px"
+                                        className="hidden md:block absolute top-5 left-[calc(100%-19.7rem)] w-full h-px"
                                         style={{ backgroundColor: 'rgba(201,154,86,0.25)' }}
                                     />
                                 )}
@@ -374,13 +376,13 @@ const Home = () => {
                             Free to start. No card required.
                         </p>
                     </div>
-                    <a
-                        href="/get-started"
+                    <button
                         className="btn border-none px-7"
                         style={{ backgroundColor: 'var(--color-brass-light)', color: 'var(--color-ink)', fontFamily: 'var(--font-serif)', fontWeight: 600 }}
+                        onClick={()=> {navigate('/register')}}
                     >
                         Get started →
-                    </a>
+                    </button>
                 </div>
             </section>
 
@@ -431,7 +433,7 @@ const Home = () => {
                             </h4>
                             <ul className="space-y-3 text-sm">
                                 <li><a href="/login">Log in</a></li>
-                                <li><a href="/get-started">Get started</a></li>
+                                <li><a href="/register">Get started</a></li>
                             </ul>
                         </div>
                     </div>
