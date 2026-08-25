@@ -58,10 +58,14 @@ export default function AuthLayout({ step, totalSteps, heading, supportingText, 
         {/* Form side */}
         <div className="flex-1 flex items-center justify-center p-8 lg:p-[52px]">
           <div className="w-full max-w-[460px]">
-            <div className="font-mono text-[11px] tracking-[0.1em] uppercase text-ink-faint mb-3">
-              Step {step} of {totalSteps}
-            </div>
-            <StepDots total={totalSteps} current={step} />
+            {totalSteps > 1 && (
+              <>
+                <div className="font-mono text-[11px] tracking-[0.1em] uppercase text-ink-faint mb-3">
+                  Step {step} of {totalSteps}
+                </div>
+                <StepDots total={totalSteps} current={step} />
+              </>
+            )}
             {children}
           </div>
         </div>
