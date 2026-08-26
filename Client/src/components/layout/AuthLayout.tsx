@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import StepDots from '../ui/StepDots';
+import { Link } from 'react-router-dom';
 
 interface AuthLayoutProps {
   step: number;
@@ -37,7 +38,7 @@ export default function AuthLayout({ step, totalSteps, heading, supportingText, 
             }}
           />
 
-          <div className="relative flex items-center gap-2.5">
+          <Link to="/" className="relative flex items-center gap-2.5" aria-label="Back to home">
             <span
               className="flex items-center justify-center w-9 h-9 rounded-full border"
               style={{ borderColor: 'var(--color-brass-light)', color: 'var(--color-brass-light)', fontFamily: 'var(--font-display)' }}
@@ -45,7 +46,7 @@ export default function AuthLayout({ step, totalSteps, heading, supportingText, 
               E
             </span>
             <span className="text-xl font-bold text-brass-light">ExpenseDekho</span>
-          </div>
+          </Link>
 
           <div className="relative">
             <h2 className="text-paper text-[30px] leading-[1.25] mb-4">{heading}</h2>

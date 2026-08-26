@@ -91,8 +91,8 @@ export default function Login() {
             />
             Remember me
           </label>
-          <Link to="/forgot-password" className="text-green font-semibold">
-            Forgot password?
+          <Link to="/forget-password" className="text-green font-semibold">
+            Forget password?
           </Link>
         </div>
 
