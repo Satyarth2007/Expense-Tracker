@@ -1,4 +1,3 @@
-
 BEGIN;
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;   -- gen_random_uuid()
@@ -56,14 +55,6 @@ END $$;
 DO $$ 
 BEGIN
   CREATE TYPE transaction_source AS ENUM ('manual', 'csv_import', 'pdf_import', 'recurring', 'plaid');
-EXCEPTION 
-    WHEN duplicate_object THEN NULL; 
-END $$;
-
-
-DO $$ 
-BEGIN
-  CREATE TYPE ocr_status_type AS ENUM ('pending', 'processing', 'completed', 'failed');
 EXCEPTION 
     WHEN duplicate_object THEN NULL; 
 END $$;
@@ -290,10 +281,6 @@ CREATE TABLE IF NOT EXISTS transactions (
   transaction_date DATE NOT NULL,
   source transaction_source NOT NULL DEFAULT 'manual',
   source_ref_id UUID,
-  receipt_url VARCHAR(500),
-  receipt_public_id VARCHAR(255),
-  ocr_status ocr_status_type,
-  ocr_raw_text TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   deleted_at TIMESTAMPTZ
