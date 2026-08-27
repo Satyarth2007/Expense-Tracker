@@ -16,3 +16,14 @@ export const loginSchema = z.object({
     email: z.string().email(),
     password: z.string().min(1),
 })
+
+
+export const forgotPasswordSchema = z.object({
+    email: z.string().email(),
+})
+
+
+export const resetPasswordSchema = z.object({
+    token: z.string().min(1),
+    newPassword: z.string().min(8, "Password must be atleast 8 characters"),
+})

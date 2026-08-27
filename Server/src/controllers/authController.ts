@@ -5,6 +5,7 @@ import {registerSchema, loginSchema} from '../validators/authValidators.js'
 import { pool } from "../config/db.js";
 import bcrypt from 'bcrypt'
 import { redis } from "../config/redis.js";
+import { revokeAllSessions } from "../utils/sessionUtils.js";
 
 const SALT_ROUNDS = 12;
 const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
@@ -35,14 +36,6 @@ async function signRefreshToken(userId: string) {
   return refreshToken;
 }
 
-async function revokeAllSessions(userId: string) {
-  const jtis = await redis.smembers(`user_sessions:${userId}`);
-  if (jtis.length > 0) {
-    const keys = jtis.map((jti) => `refresh:${jti}`);
-    await redis.del(...keys);
-  }
-  await redis.del(`user_sessions:${userId}`);
-}
 
 function setRefreshCookie(res: Response, refreshToken: string) {
   res.cookie("refreshToken", refreshToken, {

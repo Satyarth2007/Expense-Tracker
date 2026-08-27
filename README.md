@@ -63,11 +63,6 @@ Expense-Tracker/
     │   ├── models/
     │   ├── schemas/
     │   ├── services/
-    │   └── workers/
-    └── tests/
-        ├── e2e/
-        ├── integration/
-        └── unit/
 ```
 
 ## DATABASE SCHEMAS
