@@ -50,7 +50,7 @@ web_modules/
 # Optional npm cache directory
 .npm
 node_modules
-
+/dist
 # Optional eslint cache
 .eslintcache
 
