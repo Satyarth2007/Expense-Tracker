@@ -1,0 +1,34 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+@theme {
+  --color-paper: #F3EEDF;
+  --color-paper-2: #EAE2CA;
+  --color-paper-3: #E2D8BC;
+  --color-ink: #221F1A;
+  --color-ink-soft: #6B5F4C;
+  --color-ink-faint: #948A72;
+  --color-green: #1F4D3A;
+  --color-green-2: #2E6B4C;
+  --color-green-wash: #E4EBE2;
+  --color-red: #8B2A2A;
+  --color-red-wash: #F1E3DF;
+  --color-brass: #A9793A;
+  --color-brass-light: #C79A56;
+  --color-rule: #CBBF9E;
+  --color-rule-soft: #E1D7B9;
+
+  --font-display: "Fraunces", serif;
+  --font-serif: "Source Serif 4", serif;
+  --font-mono: "IBM Plex Mono", monospace;
+}
+
+body {
+  background-color: var(--color-paper);
+  background-image: repeating-linear-gradient(
+    to bottom, transparent, transparent 37px, rgba(203, 191, 158, 0.5) 38px
+  );
+  color: var(--color-ink);
+  font-family: var(--font-serif);
+  -webkit-font-smoothing: antialiased;
+}
