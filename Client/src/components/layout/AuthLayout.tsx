@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import StepDots from '../ui/StepDots';
 import { Link } from 'react-router-dom';
 
@@ -75,30 +75,90 @@ export default function AuthLayout({ step, totalSteps, heading, supportingText, 
   );
 }
 
+const CHART_DATA = [
+  { month: 'Mar', value: 82, amount: '₹1,04,200' },
+  { month: 'Apr', value: 65, amount: '₹96,800' },
+  { month: 'May', value: 55, amount: '₹88,300' },
+  { month: 'Jun', value: 95, amount: '₹1,21,400' },
+  { month: 'Jul', value: 70, amount: '₹1,02,900' },
+  { month: 'Aug', value: 85, amount: '₹1,13,600' },
+];
+
 function DefaultIllustration() {
-  const bars = [45, 75, 55, 95, 70, 85];
+  const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <div>
+    <div className="w-full">
       <style>{`
         @keyframes growBar {
           from { transform: scaleY(0); }
           to { transform: scaleY(1); }
         }
+        @keyframes tooltipIn {
+          from { opacity: 0; transform: translate(-50%, 4px); }
+          to { opacity: 1; transform: translate(-50%, 0); }
+        }
       `}</style>
-      <div className="flex gap-4 items-end h-[170px] border-b border-[rgba(201,154,86,0.25)] pb-3">
-        {bars.map((h, i) => (
-          <div
-            key={i}
-            className="w-7 rounded-t-md origin-bottom"
-            style={{
-              height: `${h}%`,
-              background: 'linear-gradient(to top, var(--color-brass), var(--color-brass-light))',
-              boxShadow: '0 6px 18px rgba(0,0,0,0.25)',
-              animation: `growBar 1s cubic-bezier(0.2,0.8,0.3,1) ${i * 0.08}s both`,
-            }}
-          />
-        ))}
+
+      <div className="flex justify-start gap-3 sm:gap-4 lg:gap-5 items-end h-[130px] sm:h-[150px] lg:h-[170px] w-full border-b border-[rgba(201,154,86,0.25)] pb-3">
+        {CHART_DATA.map((d, i) => {
+          const isHovered = hovered === i;
+          return (
+            <div
+              key={d.month}
+              className="relative flex flex-col items-center justify-end h-full w-6 sm:w-7"
+              onMouseEnter={() => setHovered(i)}
+              onMouseLeave={() => setHovered(null)}
+            >
+              {/* Tooltip */}
+              {isHovered && (
+                <div
+                  className="absolute -top-2 left-1/2 z-10 -translate-x-1/2 -translate-y-full whitespace-nowrap rounded-[3px] px-2 sm:px-2.5 py-1 sm:py-1.5 text-center"
+                  style={{
+                    background: 'var(--color-brass-light)',
+                    color: 'var(--color-ink)',
+                    animation: 'tooltipIn 0.15s ease both',
+                  }}
+                >
+                  <div
+                    className="font-mono text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide"
+                    style={{ opacity: 0.75 }}
+                  >
+                    {d.month}
+                  </div>
+                  <div className="font-mono text-[11px] sm:text-[12px] font-semibold leading-tight">
+                    {d.amount}
+                  </div>
+                  {/* Little pointer */}
+                  <div
+                    className="absolute left-1/2 top-full -translate-x-1/2"
+                    style={{
+                      width: 0,
+                      height: 0,
+                      borderLeft: '5px solid transparent',
+                      borderRight: '5px solid transparent',
+                      borderTop: '5px solid var(--color-brass-light)',
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Bar */}
+              <div
+                className="w-full rounded-t-md origin-bottom cursor-pointer transition-[transform,filter] duration-200"
+                style={{
+                  height: `${d.value}%`,
+                  background: isHovered
+                    ? 'linear-gradient(to top, var(--color-brass-light), #E4B876)'
+                    : 'linear-gradient(to top, var(--color-brass), var(--color-brass-light))',
+                  boxShadow: isHovered ? '0 10px 22px rgba(0,0,0,0.35)' : '0 6px 18px rgba(0,0,0,0.25)',
+                  transform: isHovered ? 'scaleY(1.04)' : 'scaleY(1)',
+                  animation: `growBar 1s cubic-bezier(0.2,0.8,0.3,1) ${i * 0.08}s both`,
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
