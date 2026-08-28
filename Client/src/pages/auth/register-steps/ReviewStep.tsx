@@ -10,9 +10,20 @@ interface ReviewStepProps {
   categories: Record<string, string[]>;
   onNext: () => void;
   onBack: () => void;
+  isSubmitting: boolean;
+  error: string | null;
 }
 
-export default function ReviewStep({ account, persona, workspaceName, categories, onNext, onBack }: ReviewStepProps) {
+export default function ReviewStep({
+  account,
+  persona,
+  workspaceName,
+  categories,
+  onNext,
+  onBack,
+  isSubmitting,
+  error,
+}: ReviewStepProps) {
   const personaOption = PERSONA_OPTIONS.find((p) => p.id === persona);
   const chosen = CATEGORY_GROUPS
     .map((group) => ({ group, subs: categories[group.id] ?? [] }))
@@ -48,9 +59,24 @@ export default function ReviewStep({ account, persona, workspaceName, categories
         </div>
       </div>
 
+      {error && (
+        <div className="rounded-md border border-red/30 bg-red-wash text-red text-sm px-4 py-3 mb-5">
+          {error}
+        </div>
+      )}
+
       <div className="flex gap-3">
-        <button type="button" onClick={onBack} className={ghostBtnClass}>← Back</button>
-        <button type="button" onClick={onNext} className={primaryBtnClass + ' flex-1'}>Confirm & send code →</button>
+        <button type="button" onClick={onBack} disabled={isSubmitting} className={ghostBtnClass}>
+          ← Back
+        </button>
+        <button
+          type="button"
+          onClick={onNext}
+          disabled={isSubmitting}
+          className={primaryBtnClass + ' flex-1' + (isSubmitting ? ' opacity-70 cursor-not-allowed' : '')}
+        >
+          {isSubmitting ? 'Sending code…' : 'Confirm & send code →'}
+        </button>
       </div>
     </div>
   );

@@ -1,18 +1,35 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { isAxiosError } from "axios";
 import AuthIllustration from "../../components/ui/AuthIllustration";
+import { useAuth, type ApiErrorResponse } from "../../context/AuthContext";
 
 export default function ForgotPassword() {
+  const { forgotPassword } = useAuth();
   const [email, setEmail] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     setIsSubmitting(true);
     try {
-      // TODO: call POST /auth/forgot-password with { email }
+      await forgotPassword(email);
       setShowSuccess(true);
+    } catch (err) {
+      // forgotPassword only errors on validation issues (bad email format)
+      // or a genuine server failure — your backend intentionally returns
+      // 200 even when the email doesn't exist, to avoid leaking which
+      // emails are registered. So a real error here means something else
+      // is actually wrong, not just "email not found."
+      const message = isAxiosError<ApiErrorResponse>(err) && err.response
+        ? typeof err.response.data.error === "string"
+          ? err.response.data.error
+          : "Please check the email address and try again."
+        : "Something went wrong. Please try again.";
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -106,6 +123,15 @@ export default function ForgotPassword() {
               />
             </div>
 
+            {error && (
+              <div
+                className="text-sm rounded-[3px] px-3.5 py-3 mb-5"
+                style={{ background: "var(--color-red-wash)", color: "var(--color-red)" }}
+              >
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={isSubmitting}
@@ -172,7 +198,7 @@ export default function ForgotPassword() {
             </h2>
             <p className="text-sm mb-6" style={{ color: "var(--color-ink-soft)" }}>
               We've sent a password reset link to <strong>{email || "your email"}</strong>. Click
-              the link to choose a new password — it expires in 15 minutes.
+              the link to choose a new password — it expires in 30 minutes.
             </p>
 
             <Link

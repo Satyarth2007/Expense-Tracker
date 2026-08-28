@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { isAxiosError } from 'axios';
 import AuthLayout from '../../components/layout/AuthLayout.tsx';
 import AccountStep from '../auth/register-steps/AccountStep.tsx';
 import PersonaStep from '../auth/register-steps/PersonaStep.tsx';
@@ -6,6 +8,7 @@ import CategoriesStep from '../auth/register-steps/CategoriesStep.tsx';
 import ReviewStep from '../auth/register-steps/ReviewStep.tsx';
 import VerifyStep from '../auth/register-steps/VerifyStep';
 import type { PersonaId } from '../../types/auth';
+import { useAuth, type ApiErrorResponse } from '../../context/AuthContext';
 
 export interface AccountData {
   fullName: string;
@@ -24,12 +27,33 @@ const STEP_COPY: Record<number, { heading: string; supporting?: string }> = {
   5: { heading: "Almost yours — just confirming it's really you." },
 };
 
+// Unwraps authController's error shape — either a plain string ("Invalid or
+// expired OTP") or a Zod .flatten() object — into one message a form can show.
+function getErrorMessage(err: unknown, fallback: string): string {
+  if (isAxiosError<ApiErrorResponse>(err) && err.response) {
+    const { error } = err.response.data;
+    if (typeof error === 'string') return error;
+    const firstFieldError = Object.values(error.fieldErrors).flat()[0];
+    if (firstFieldError) return firstFieldError;
+    if (error.formErrors[0]) return error.formErrors[0];
+  }
+  return fallback;
+}
+
 export default function Register() {
+  const navigate = useNavigate();
+  const { sendOtp, register } = useAuth();
+
   const [step, setStep] = useState(1);
   const [account, setAccount] = useState<AccountData>(INITIAL_ACCOUNT);
   const [persona, setPersona] = useState<PersonaId | null>(null);
   const [workspaceName, setWorkspaceName] = useState('');
   const [categories, setCategories] = useState<Record<string, string[]>>({});
+
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifyError, setVerifyError] = useState<string | null>(null);
 
   function handlePersonaSelect(id: PersonaId) {
     setPersona(id);
@@ -46,12 +70,55 @@ export default function Register() {
     });
   }
 
-  function handleVerify(code: string) {
-    // Nothing is written to Postgres until this succeeds — see the
-    // Step 4/5 discussion: user + workspace + categories are created
-    // together, atomically, only after OTP confirmation.
-    // API wiring deferred until src/lib/api.ts + AuthContext land.
-    console.log('verify', { account, persona, workspaceName, categories, code });
+  // Fires the OTP email when the user leaves Review for Verify. sendOtp's
+  // own 409 check (email already registered) surfaces here — before the
+  // user types a code for an account that can never be created.
+  async function handleReviewNext() {
+    setOtpError(null);
+    setIsSendingOtp(true);
+    try {
+      await sendOtp(account.email);
+      setStep(5);
+    } catch (err) {
+      setOtpError(getErrorMessage(err, 'Could not send the verification code. Please try again.'));
+    } finally {
+      setIsSendingOtp(false);
+    }
+  }
+
+  // registerSchema only accepts { email, password, fullName, otp } — persona,
+  // workspaceName, and categories are NOT sent to the backend. Persona is
+  // UI-only per the locked scope (register always creates a 'personal'
+  // workspace regardless of what's picked in step 2).
+  //
+  // Categories collected in step 3 currently have nowhere to go: there's no
+  // Categories API yet (next in the build order, after this). Once it
+  // exists, loop `categories` here after register() resolves and POST each
+  // one using the freshly issued accessToken — for now the selections are
+  // just discarded on submit, which is worth knowing before you demo this.
+  // Wired to VerifyStep's "Resend code" button. Reuses the same sendOtp
+  // call as leaving Review — VerifyStep manages its own "Sending…"/"Sent!"
+  // state locally and only needs this to resolve or reject.
+  async function handleResend() {
+    await sendOtp(account.email);
+  }
+
+  async function handleVerify(code: string) {
+    setVerifyError(null);
+    setIsVerifying(true);
+    try {
+      await register({
+        email: account.email,
+        password: account.password,
+        fullName: account.fullName,
+        otp: code,
+      });
+      navigate('/dashboard');
+    } catch (err) {
+      setVerifyError(getErrorMessage(err, 'Verification failed. Please check the code and try again.'));
+    } finally {
+      setIsVerifying(false);
+    }
   }
 
   const copy = STEP_COPY[step];
@@ -76,11 +143,22 @@ export default function Register() {
           persona={persona}
           workspaceName={workspaceName}
           categories={categories}
-          onNext={() => setStep(5)}
+          onNext={handleReviewNext}
           onBack={() => setStep(3)}
+          isSubmitting={isSendingOtp}
+          error={otpError}
         />
       )}
-      {step === 5 && <VerifyStep email={account.email} onVerify={handleVerify} onBack={() => setStep(4)} />}
+      {step === 5 && (
+        <VerifyStep
+          email={account.email}
+          onVerify={handleVerify}
+          onBack={() => setStep(4)}
+          onResend={handleResend}
+          isSubmitting={isVerifying}
+          error={verifyError}
+        />
+      )}
     </AuthLayout>
   );
 }
