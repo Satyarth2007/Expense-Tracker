@@ -9,6 +9,7 @@ import Dashboard from "./pages/dashboard/Dashboard";
 import AppShell from "./components/layout/AppShell";
 import Categories from "./pages/categories/Categories";
 import Account from "./pages/account/Account";
+import Transactions from "./pages/transactions/Transactions";
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
             {/* later: /transactions, /categories, /budgets, etc. */}
             <Route path="/categories" element={<Categories />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/transactions" element={<Transactions />} />
           </Route>
         </Route>
 
