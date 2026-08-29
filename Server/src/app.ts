@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import authRoutes from './routes/authRoutes.js'
 import cookieParser from "cookie-parser";
+import categoryRoutes from './routes/categoryRoutes.js'
 
 const app = express()
 
@@ -18,6 +19,7 @@ app.use(cookieParser())
 
 // Routes
 app.use('/api/v1/auth', authRoutes)
+app.use('/api/v1/categories', categoryRoutes)
 
 // Health check route
 app.get('/health', (_req: Request, res: Response) => {
