@@ -9,6 +9,8 @@ import ReviewStep from '../auth/register-steps/ReviewStep.tsx';
 import VerifyStep from '../auth/register-steps/VerifyStep';
 import type { PersonaId } from '../../types/auth';
 import { useAuth, type ApiErrorResponse } from '../../context/AuthContext';
+import { CATEGORY_GROUPS } from '../../types/categories';
+import { createCategory } from '../../lib/categories';
 
 export interface AccountData {
   fullName: string;
@@ -113,6 +115,39 @@ export default function Register() {
         fullName: account.fullName,
         otp: code,
       });
+
+      // Persist the categories picked in Step 3 (Category picker gives group
+      // names like "Food & Dining" and subcategory names like "Groceries").
+      // register() has already set the token in AuthContext by the time we
+      // get here, so `api` (via the request interceptor) will send it.
+      for (const [groupId, subcats] of Object.entries(categories)) {
+        if (subcats.length === 0) continue;
+
+        const group = CATEGORY_GROUPS.find((g) => g.id === groupId);
+        if (!group) continue;
+
+        try {
+          const parent = await createCategory({
+            name: group.name,
+            type: 'expense',
+            icon: group.icon,
+          });
+
+          for (const subName of subcats) {
+            await createCategory({
+              name: subName,
+              type: 'expense',
+              parentId: parent.id,
+            });
+          }
+        } catch (categoryErr) {
+          // Don't block the user from reaching the dashboard just because
+          // one category failed (e.g. a duplicate name edge case) — log and
+          // continue with the rest.
+          console.error(`Failed to create category group "${group.name}":`, categoryErr);
+        }
+      }
+
       navigate('/dashboard');
     } catch (err) {
       setVerifyError(getErrorMessage(err, 'Verification failed. Please check the code and try again.'));
