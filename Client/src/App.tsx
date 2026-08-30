@@ -10,6 +10,7 @@ import AppShell from "./components/layout/AppShell";
 import Categories from "./pages/categories/Categories";
 import Account from "./pages/account/Account";
 import Transactions from "./pages/transactions/Transactions";
+import Budgets from "./pages/budgets/Budgets";
 
 function App() {
 
@@ -32,6 +33,8 @@ function App() {
             <Route path="/categories" element={<Categories />} />
             <Route path="/account" element={<Account />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/budgets" element={<Budgets />} />
+            <Route path="dashboard" element={<Dashboard />} />
           </Route>
         </Route>
 

@@ -49,7 +49,7 @@ export async function listBudgets(req: Request, res: Response) {
              WHEN 'quarterly' THEN date_trunc('quarter', CURRENT_DATE) + interval '3 months'
              WHEN 'yearly'    THEN date_trunc('year', CURRENT_DATE) + interval '1 year'
            END AS period_end
-       ) ps ON true
+       ) ps
        LEFT JOIN LATERAL (
          SELECT SUM(t.amount) AS total
          FROM transactions t
