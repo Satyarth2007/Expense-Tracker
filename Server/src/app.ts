@@ -8,6 +8,8 @@ import transactionRoutes from './routes/transactionRoutes.js'
 import budgetRoutes from './routes/budgetRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import recurringRoutes from './routes/recurringRoutes.js';
+import importRoutes from './routes/importRoutes.js';
+import reportRoutes from './routes/reportRoutes.js';
 
 const app = express()
 
@@ -28,6 +30,8 @@ app.use('/api/v1/transactions', transactionRoutes);
 app.use('/api/v1/budgets', budgetRoutes);
 app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/recurring', recurringRoutes);
+app.use('/api/v1/import', importRoutes);
+app.use('/api/v1/reports', reportRoutes);
 
 // Health check route
 app.get('/health', (_req: Request, res: Response) => {

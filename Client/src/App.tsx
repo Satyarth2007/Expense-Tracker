@@ -11,6 +11,9 @@ import Categories from "./pages/categories/Categories";
 import Account from "./pages/account/Account";
 import Transactions from "./pages/transactions/Transactions";
 import Budgets from "./pages/budgets/Budgets";
+import Recurring from "./pages/recurring/Recurring";
+import Import from "./pages/import/Import";
+import Reports from "./pages/reports/Reports";
 
 function App() {
 
@@ -34,7 +37,9 @@ function App() {
             <Route path="/account" element={<Account />} />
             <Route path="/transactions" element={<Transactions />} />
             <Route path="/budgets" element={<Budgets />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="/recurring" element={<Recurring />} />
+            <Route path="/import" element={<Import />} />
+            <Route path="/reports" element={<Reports />} />
           </Route>
         </Route>
 

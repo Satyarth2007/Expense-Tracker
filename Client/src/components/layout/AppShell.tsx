@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import UserMenu from './UserMenu';
 
 interface Tab {
     to: string;
@@ -256,7 +257,8 @@ export default function AppShell() {
                                     className="w-8 h-8 rounded-full border flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
                                     style={{ borderColor: 'currentColor' }}
                                 >
-                                    {userInitial}
+                                    {/* {userInitial} */}
+                                    <UserMenu />
                                 </div>
                                 <span
                                     className="pointer-events-none absolute left-[64px] top-1/2 -translate-y-1/2 whitespace-nowrap rounded-[3px] px-2.5 py-1.5 text-[11px] font-semibold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-150"
