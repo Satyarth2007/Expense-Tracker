@@ -1,0 +1,1 @@
+export type RecurringFrequency = "daily" | "weekly" | "biweekly" | "monthly" | "yearly";
