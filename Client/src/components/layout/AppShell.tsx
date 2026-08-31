@@ -232,43 +232,10 @@ export default function AppShell() {
                         </NavLink>
                     </div>
 
-                    {/* Desktop-only: user icon sits above the LEDGER · FY26 footer */}
-                    <NavLink
-                        to="/account"
-                        className={({ isActive }) =>
-                            `hidden lg:flex group relative items-center justify-center w-14 h-11 rounded-md transition-colors duration-200 ${isActive ? 'bg-brass-light text-ink' : 'text-[#B9AF98] hover:text-paper'
-                            }`
-                        }
-                        aria-label="Account"
-                    >
-                        {({ isActive }) => (
-                            <>
-                                {isActive && (
-                                    <span
-                                        className="absolute -left-6 top-1/2 -translate-y-1/2 w-0 h-0"
-                                        style={{
-                                            borderTop: '8px solid transparent',
-                                            borderBottom: '8px solid transparent',
-                                            borderLeft: '8px solid var(--color-brass-light)',
-                                        }}
-                                    />
-                                )}
-                                <div
-                                    className="w-8 h-8 rounded-full border flex items-center justify-center text-[13px] font-semibold flex-shrink-0"
-                                    style={{ borderColor: 'currentColor' }}
-                                >
-                                    {/* {userInitial} */}
-                                    <UserMenu />
-                                </div>
-                                <span
-                                    className="pointer-events-none absolute left-[64px] top-1/2 -translate-y-1/2 whitespace-nowrap rounded-[3px] px-2.5 py-1.5 text-[11px] font-semibold tracking-wide opacity-0 group-hover:opacity-100 transition-opacity duration-150"
-                                    style={{ background: 'var(--color-brass-light)', color: 'var(--color-ink)', fontFamily: 'var(--font-mono)' }}
-                                >
-                                    {user?.fullName ?? 'Account'}
-                                </span>
-                            </>
-                        )}
-                    </NavLink>
+                    {/* Desktop-only: UserMenu renders its own avatar button + dropdown */}
+                    <div className="hidden lg:flex items-center justify-center w-14 h-11">
+                        <UserMenu />
+                    </div>
 
                     <div
                         className="hidden lg:block text-[9px] tracking-[0.15em] pt-5"

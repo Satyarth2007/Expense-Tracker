@@ -72,6 +72,19 @@ export default function UserMenu() {
             </div>
             <div className="font-semibold text-[14.5px] text-ink truncate">{user.fullName}</div>
             <div className="text-[12.5px] text-ink-soft truncate mt-0.5">{user.email}</div>
+            <div className="font-mono text-[10.5px] text-ink-faint mt-2 uppercase tracking-wider truncate">
+              Workspace · {user.workspaceId}
+            </div>
+          </div>
+
+          <div className="py-1.5 border-b border-rule-soft">
+            <a
+              href="/account"
+              className="block px-4 py-2.5 text-[13.5px] text-ink hover:bg-paper-3 transition-colors"
+              onClick={() => setIsOpen(false)}
+            >
+              View account
+            </a>
           </div>
 
           <div className="py-1.5">
