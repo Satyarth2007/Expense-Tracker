@@ -9,6 +9,19 @@ import { revokeAllSessions } from "../utils/sessionUtils.js";
 
 const SALT_ROUNDS = 12;
 const REFRESH_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60; // 7 days
+const USED_TOKEN_GRACE_SECONDS = 60; // window to detect reuse after rotation
+
+const isProd = process.env.NODE_ENV === "production";
+
+// Shared cookie options — must be identical between the cookie() call that
+// sets it and every clearCookie() call, or some browsers won't delete it.
+// sameSite: "none" + secure: true is required for cross-domain (e.g. Vercel -> Render).
+// Locally (NODE_ENV unset), we fall back to "lax" + secure: false since there's no HTTPS.
+const refreshCookieOptions = {
+  httpOnly: true,
+  sameSite: (isProd ? "none" : "lax") as "none" | "lax",
+  secure: isProd, // must be true whenever sameSite is "none"
+};
 
 function signAccessToken(userId: string, workspaceId: string) {
   const secret = process.env.JWT_ACCESS_TOKEN;
@@ -17,8 +30,6 @@ function signAccessToken(userId: string, workspaceId: string) {
   }
   return jwt.sign({ userId, workspaceId }, secret, { expiresIn: "15m" });
 }
-
-const USED_TOKEN_GRACE_SECONDS = 60; // window to detect reuse after rotation
 
 async function signRefreshToken(userId: string) {
   const secret = process.env.JWT_REFRESH_TOKEN;
@@ -36,14 +47,15 @@ async function signRefreshToken(userId: string) {
   return refreshToken;
 }
 
-
 function setRefreshCookie(res: Response, refreshToken: string) {
   res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: false, // set true in production (requires HTTPS)
+    ...refreshCookieOptions,
     maxAge: REFRESH_TOKEN_TTL_SECONDS * 1000,
   });
+}
+
+function clearRefreshCookie(res: Response) {
+  res.clearCookie("refreshToken", refreshCookieOptions);
 }
 
 /**
@@ -213,7 +225,7 @@ export async function refresh(req: Request, res: Response) {
         console.warn(`Refresh token reuse detected for user ${payload.userId} — revoking all sessions`);
         await revokeAllSessions(payload.userId);
       }
-      res.clearCookie("refreshToken");
+      clearRefreshCookie(res);
       return res.status(401).json({ error: "Refresh token is invalid or has been revoked" });
     }
 
@@ -237,7 +249,7 @@ export async function refresh(req: Request, res: Response) {
 
     return res.json({ accessToken: newAccessToken });
   } catch (err) {
-    res.clearCookie("refreshToken");
+    clearRefreshCookie(res);
     return res.status(401).json({ error: "Refresh token is invalid or expired" });
   }
 }
@@ -251,7 +263,7 @@ export async function logout(req: Request, res: Response) {
   await redis.del(`refresh:${jti}`);
   await redis.srem(`user_sessions:${userId}`, jti);
 
-  res.clearCookie("refreshToken");
+  clearRefreshCookie(res);
   return res.status(200).json({ message: "Logged out successfully" });
 }
 
@@ -263,6 +275,6 @@ export async function logout(req: Request, res: Response) {
  */
 export async function logoutAll(req: Request, res: Response) {
   await revokeAllSessions(req.refreshAuth!.userId);
-  res.clearCookie("refreshToken");
+  clearRefreshCookie(res);
   return res.status(200).json({ message: "Logged out of all devices" });
 }
