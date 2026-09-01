@@ -48,7 +48,7 @@ export async function exportReport(req: Request, res: Response) {
  * Raw ledger export — every transaction in range, one row each.
  */
 async function exportRawCsv(
-  req: Request,
+  _req: Request,
   res: Response,
   workspaceId: string,
   from: string,
@@ -129,7 +129,7 @@ async function getCategorySummary(workspaceId: string, from: string, to: string)
 }
 
 async function exportSummaryCsv(
-  req: Request,
+  _req: Request,
   res: Response,
   workspaceId: string,
   from: string,
@@ -159,7 +159,7 @@ async function exportSummaryCsv(
  * transaction listing, matching the mockup's "clean printable summary".
  */
 async function exportPdfStatement(
-  req: Request,
+  _req: Request,
   res: Response,
   workspaceId: string,
   from: string,

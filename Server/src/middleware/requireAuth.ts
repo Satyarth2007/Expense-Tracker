@@ -26,7 +26,7 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     const payload = jwt.verify(token, secret) as AccessTokenPayload;
     req.userId = payload.userId;
     req.workspaceId = payload.workspaceId;
-    next();
+    return next();
   } catch (err) {
     return res.status(401).json({ error: "Access token is invalid or expired" });
   }
